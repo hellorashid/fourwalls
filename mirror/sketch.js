@@ -1,44 +1,48 @@
 let video;
-
 let vScale = 16;
 
 function setup() {
   createCanvas(640, 480);
-  pixelDensity(1);
-  video = createCapture(VIDEO);
+  pixelDensity(1); // for high-denstity displays
+
+  video = createCapture(VIDEO); // capture webcam
   video.size(width/vScale, height/vScale);
 
-  fire = loadImage("lit.gif");  // Load the image
-  // video.hide();
+  fire = loadImage("lit.gif");  // Load local image
+
+  // Show or hide the live webcam feed: 
+  // video.hide(); 
 }
 
 function draw() {
   background(212, 161, 232);
-  // image(capture, 0, 0, windowWidth/2, windowHeight/2); 
+
+  //Show the camera feed as image, can also apply filters: 
+  // image(video, 0, 0, windowWidth/2, windowHeight/2); 
   // filter('THRESHOLD');
   // filter('BLUR');
 
   video.loadPixels();
-  loadPixels();
+  loadPixels(); // <- Loads all pixels from video into a hugeass array
   for (let y = 0; y < video.height; y++) {
-    for (let x = 0; x < video.width; x++) {
-      // get the index of current pixel in array:
+    for (let x = 0; x < video.width; x++) { //  <- loop over said hugeass array
 
+      // get the index of current pixel in array:
       let index = (video.width - x + 1 + (y * video.width))*4;
       
-      // set RGBA values of current pixel: 
+      // get the RGBA values of current pixel: 
       let r = video.pixels[index+0];
       let g = video.pixels[index+1];
       let b = video.pixels[index+2];
-      // let a = pixels[index+4];
+      // let a = pixels[index+4]; 
 
       // get average brightness of current pixel:
-
       let bright = (r+g+b)/3;
-      let w = map(bright, 0, 255, 0, vScale);
+      // map the brightness to width, using vScale
+      let w = map(bright, 0, 255, 0, vScale); 
 
       
-      //draw new pixel: 
+      //draw new pixel, directly, or using drawPixel function below: 
       drawPixel(x*vScale, y*vScale, w, w);
       // noStroke();
       // fill(random(255));
@@ -51,26 +55,32 @@ function draw() {
 
 
 function drawPixel(xPos, yPos, pixelSize) { 
+  // this function whatever in each pixel 
+  // use xPos & yPos for positioning pixel
+  // use pixelSize to play around with shit getting bigger & smaller
+
+
+  // Rectangles : 
   noStroke();
   fill(color(139, 34, 228));
   rectMode(CENTER);
+  // ellipse(xPos, yPos, pixelSize, pixelSize);
 
-  // draw circle : 
+
+  // Circles : 
   ellipse(xPos, yPos, pixelSize, pixelSize);
-  // print(pixelSize)
+
+  // Emojis
   // textSize(pixelSize)
   // if (pixelSize > 10) { 
   //   text('✅', xPos, yPos)
   // } 
   // else { 
-  //   text('😍', xPos, yPos)
-  //   // image(fire , xPos, yPos, pixelSize * 4, pixelSize * 4);
-    
-  //   // box(pixelSize);
+  //   text('😍', xPos, yPos)    
   // }
 }
 
-// Direct pixel manimpulation
+// Direct pixel manimpulation, in draw() 
   // loadPixels();
   // for (let y = 0; y < height; y++) { 
   //   for (let x=0; x < width; x++) { 
