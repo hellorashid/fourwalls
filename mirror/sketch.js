@@ -15,7 +15,7 @@ function setup() {
 }
 
 function draw() {
-  background(212, 161, 232);
+  background(0);
 
   //Show the camera feed as image, can also apply filters: 
   // image(video, 0, 0, windowWidth/2, windowHeight/2); 
