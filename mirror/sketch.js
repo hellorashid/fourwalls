@@ -65,7 +65,7 @@ function drawPixel(xPos, yPos, pixelSize) {
 
   // Rectangles : 
   noStroke();
-  fill(color(139, 34, 228));
+  fill(color(random(255), random(255), random(255)));
   rectMode(CENTER);
   // ellipse(xPos, yPos, pixelSize, pixelSize);
 
