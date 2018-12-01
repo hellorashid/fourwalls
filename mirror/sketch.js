@@ -31,6 +31,9 @@ function draw() {
       let index = (video.width - x + 1 + (y * video.width))*4;
       
       // get the RGBA values of current pixel: 
+      // note that said hugeass array is weird because pixel 1 has values in the order R, G, B in index 0, 1, 2
+      // and so pixel 2 has values starting index 3, 4, 5 etc
+      // hence the code below:
       let r = video.pixels[index+0];
       let g = video.pixels[index+1];
       let b = video.pixels[index+2];
