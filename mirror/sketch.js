@@ -9,6 +9,7 @@ function setup() {
   video.size(width/vScale, height/vScale);
 
   fire = loadImage("lit.gif");  // Load local image
+  frameRate(12);
 
   // Show or hide the live webcam feed: 
   // video.hide(); 
