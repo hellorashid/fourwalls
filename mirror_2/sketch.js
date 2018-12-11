@@ -4,8 +4,8 @@ let angle = 0
 let test = 20
 
 function setup() {
-  // createCanvas(640, 480);
-  createCanvas(window.innerWidth, window.innerHeight);
+  createCanvas(640, 480);
+  // createCanvas(window.innerWidth, window.innerHeight);
 
   pixelDensity(1); // for high-denstity displays
 
@@ -63,7 +63,7 @@ function draw() {
   test = (sin(angle) * test) + 5
   // angle += 0.1;
   
-  console.log(angle)
+  // console.log(angle)
   // Circles : 
   ellipse(width - 20, height - 20, test, test);
 
