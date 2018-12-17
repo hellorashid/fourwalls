@@ -2,25 +2,36 @@ let video;
 let vScale = 10;
 let angle = 0 
 let test = 20
+let inverted = false
+
+let pixelScale = 1
 
 function setup() {
-  createCanvas(640, 480);
-  // createCanvas(window.innerWidth, window.innerHeight);
-
+  // createCanvas(640, 480);
+  createCanvas(window.innerWidth, window.innerHeight);
   pixelDensity(1); // for high-denstity displays
 
   video = createCapture(VIDEO); // capture webcam
   video.size(width/vScale, height/vScale);
 
-  fire = loadImage("lit.gif");  // Load local image
   frameRate(10);
 
   // Show or hide the live webcam feed: 
   video.hide(); 
+
+  
 }
 
 function draw() {
   background(0);
+  let scaleSlider = select('#myRange') 
+  vScale = scaleSlider.value()
+
+  let sizeSlider = select('#sizeSlider') 
+  pixelScale = sizeSlider.value()
+
+  let invertedValue = select('#inverted') 
+  inverted = invertedValue.checked()
 
   //Show the camera feed as image, can also apply filters: 
   // image(video, 0, 0, windowWidth/2, windowHeight/2); 
@@ -49,7 +60,6 @@ function draw() {
       // map the brightness to width, using vScale
       let w = map(bright, 0, 255, 0, vScale); 
 
-      
       //draw new pixel, directly, or using drawPixel function below: 
       drawPixel(x*vScale, y*vScale, w, w);
       // noStroke();
@@ -65,8 +75,7 @@ function draw() {
   
   // console.log(angle)
   // Circles : 
-  ellipse(width - 20, height - 20, test, test);
-
+  // ellipse(width - 20, height - 20, test, test);
 
  
 }
@@ -79,18 +88,19 @@ function drawPixel(xPos, yPos, pixelSize) {
 
   // Rectangles : 
   noStroke();
-  // fill(color(random(0,255) * noise(1), random(0,255), random(0,255)));
-
-  fill(color(sin(angle) * 209,  73, 126));
-  // 209, 73, 126
   rectMode(CENTER);
+  // fill(color(random(0,255) * noise(1), random(0,255), random(0,255)));
+  fill(color(sin(angle) * 209,  73, 126));
 
-  
+  if (inverted == true) { 
+    pixelSize = (vScale - pixelSize) 
+  }
+  pixelSize = pixelSize * pixelScale 
+
   // pixelSize = (sin(angle) * pixelSize/2) + 5
   angle += 0.2;
   
   // Circles : 
-  
   ellipse(xPos, yPos, pixelSize, pixelSize);
 
   // Emojis
@@ -120,7 +130,31 @@ function drawPixel(xPos, yPos, pixelSize) {
   // updatePixels();
 
   function keyPressed() {
-    if (value === 'SPACE') {
-     console.log("Space")
-    } 
+    if (keyCode === RIGHT_ARROW) {
+      vScale += 1 
+      console.log('New Scale: ', vScale);
+    } else if (keyCode === LEFT_ARROW) { 
+      vScale -= 1 
+      console.log('New Scale: ', vScale);
+    } else if (keyCode === UP_ARROW) {
+      // let scaleSlider = select('#myRange') 
+      // console.log(scaleSlider.value())
+      let invertedValue = select('#inverted') 
+      inverted = invertedValue.checked()
+      console.log(inverted)
+
+    }
+
+    if (key == ' ') { 
+      let settings = select('#settings') 
+
+      if (settings.style('display') == 'block') { 
+        settings.style('display', 'none')
+      } else { 
+        settings.style('display', 'block')
+      }
+    }
   }
+
+
+
