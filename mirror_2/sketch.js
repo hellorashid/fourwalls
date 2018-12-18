@@ -5,9 +5,9 @@ let test = 20
 let inverted = false
 let backgroundColor = '#000000'
 let pixelScale = 1
-let pixelType = 'gradient'
 
-let globalColor = 'random'
+let pixelType = 'circle'
+let pixelColor = 'gradient'
 
 function setup() {
   // createCanvas(640, 480);
@@ -21,7 +21,6 @@ function setup() {
 
   // Show or hide the live webcam feed: 
   // video.hide(); 
-
   
 }
 
@@ -38,6 +37,9 @@ function draw() {
 
   let backgroundColorPicker = select('#backgroundColor') 
   backgroundColor = backgroundColorPicker.value()
+  
+  let pixelColorValue = select('#pixelColor') 
+  pixelColor = pixelColorValue.value()
 
   let pixelTypeValue = select('#pixelType') 
   pixelType = pixelTypeValue.value()
@@ -99,11 +101,15 @@ function drawPixel(xPos, yPos, pixelSize) {
 
   //  ------ COLOR ------ : 
 
-  if (pixelType == 'random') { 
+  if (pixelColor == 'random') { 
     fill(color(random(0,255) , random(0,255), random(0,255)));
-  } else if (pixelType == 'gradient') { 
+  } else if (pixelColor == 'gradient') { 
     fill(color(sin(angle) * 209,  73, 126));
+  } else if (pixelColor == 'static') { 
+    fill(color(237, 34, 93))
   }
+
+ 
 
   //  ------ SETTINGS ------ : 
   if (inverted == true) { 
@@ -111,59 +117,23 @@ function drawPixel(xPos, yPos, pixelSize) {
   }
   pixelSize = pixelSize * pixelScale 
 
-
   // pixelSize = (sin(angle) * pixelSize/2) + 5
   angle += 0.2;
-  
-  let r = random(0, 255)
-  let g = random(0, 255)
-  let b = random(0, 255)
-
+ 
   
 
   //  ------ SHAPE ------ : 
   
-  if (pixelType == 'emoji') { 
+  if (pixelType == 'heart') { 
     //  Emojis
     textSize(pixelSize)
     if (pixelSize > (vScale/2)) { 
-      fill(color(r, g, b))
       text('❤', xPos, yPos)
     } 
-    else { 
-      // text('✔', xPos, yPos)    
-    }
-  } else { 
-
-    // if (pixelSize > 8 && yPos < height/3) { 
-    //   globalColor = 'red'
-    // } else if (pixelSize > 8 && xPos < width/ 3) { 
-    //   globalColor = 'green'
-    // } else if (pixelSize > 8 && xPos > 2 * (width/ 3)) { 
-    //   globalColor = 'blue'
-    // } else { 
-    //   // globalColor = 'random'
-    // }
-
-    // if (globalColor == 'red') { 
-    //   r = 255
-    //   g = 0 
-    //   b = 0
-    // } else if (globalColor == 'green') { 
-    //   r = 0
-    //   g = 255
-    //   b = 0
-    // } else if (globalColor == 'blue') { 
-    //   r = 0
-    //   g = 0 
-    //   b = 255
-    // } 
-
-    // console.log(pixelSize)
-
-    
-    // fill(color(r, g, b))
+  } else if (pixelType == 'circle') { 
     ellipse(xPos, yPos, pixelSize, pixelSize);
+  } else if (pixelType == 'square') { 
+    rect(xPos, yPos, pixelSize, pixelSize);
   }
  
 }
@@ -199,11 +169,15 @@ function drawPixel(xPos, yPos, pixelSize) {
 
     if (key == ' ') { 
       let settings = select('#settings') 
+      let designs = select('#designs') 
 
       if (settings.style('display') == 'block') { 
         settings.style('display', 'none')
+        designs.style('display', 'none')
       } else { 
         settings.style('display', 'block')
+        designs.style('display', 'block')
+
       }
     }
   }

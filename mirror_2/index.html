@@ -5,54 +5,204 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fourwalls - Mirror</title>
     <style> body {padding: 0; margin: 0;} </style>
+
+
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/p5.js"></script>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/addons/p5.dom.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/addons/p5.sound.js"></script>
     <script src="sketch.js"></script>
 
-    <style>   
-      #settings { 
-        display:none;
-        position: absolute;
-        color: white;
-        background-color: rgb(50, 50, 50, 0.9);
-        border-radius: 10;
-        opacity: 0.5;
-      }
+    <link rel="stylesheet" href="./style.css">
 
-      #settings:hover { 
-        opacity: 1
-      }
-
-      body { 
-        align-content: center
-      }
-    </style>
   </head>
-  <body style="overflow: hidden">
+  <body>
     
     <div id="settings" >
-        <p> vScale: </p>
+        <h2> settings </h2>
+        <p> press SPACE to toggle </p>
+
+
+        <p> Picture Size: </p>
         <input type="range" min="1" max="25" value="20" class="slider" id="myRange">
 
         <p> Inverted: </p>
         <input type="checkbox"  id="inverted">
 
-        <p> Size: </p>
-        <input type="range" min="0.1" max="10.0" value="1.0" step="0.1" class="slider" id="sizeSlider">
-        
-        <p> backgroundColor: </p>
+       
+        <p> Background Color: </p>
         <input type="color" name="backgroundColor" id="backgroundColor" value="#000000">
-        
-        <p> Type: </p>
-        <select id="pixelType">
+
+        <p> Colors: </p>
+        <select id="pixelColor">
           <option value="gradient">Gradient</option>
             <option value="random">Random</option>
-            <option value="emoji">Emoji</option>
+            <option value="static">Static</option>
         </select>
+
+        <p> Pixel Size: </p>
+        <input type="range" min="0.1" max="10.0" value="1.0" step="0.1" class="slider" id="sizeSlider">
+        
+        <p> Pixel Shape: </p>
+        <select id="pixelType">
+          <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="heart">Heart</option>
+        </select>
+
+      </br>
+        <button onclick="saveDesign()">Save Design</button>
+      </br>
+
+
+
       </div>
+
+      <div id="designs"> 
+          <h2> designs </h2>
+          <p> browse community designs </p> 
+
+          <button onclick="getDesigns()">Random Design</button>
+          <div class="btn-group" id="designList"> 
+
+          </div>
+      </div>
+
   </body>
 
+ 
+
+    
+  <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-firestore.js"></script>
+  
+  <script type="text/javascript" src="./secret.js"></script>
+  <script>
+    
+    // function loadJSON(callback) {   
+
+      // const firebase = require('firebase')
+    // require('firebase/firestore') 
+
+    // Initialize Firebase
+    var config = {
+      apiKey: FIREBASE_KEY,
+      authDomain: "pixel-mirror.firebaseapp.com",
+      databaseURL: "https://pixel-mirror.firebaseio.com",
+      projectId: "pixel-mirror",
+      storageBucket: "pixel-mirror.appspot.com",
+      messagingSenderId: "1002772789886"
+    };
+    firebase.initializeApp(config);
+
+    const firestore = firebase.firestore() 
+    const settings = {timestampsInSnapshots: true};
+    firestore.settings(settings);
+
+    var designRef = firestore.collection("designs")
+
+    // designRef.doc("default").get().then(function(doc) {
+    // if (doc.exists) {
+    //     console.log("Document data:", doc.data());
+    // } else {
+    //     // doc.data() will be undefined in this case
+    //     console.log("No such document!");
+    // }
+    // }).catch(function(error) {
+    //     console.log("Error getting document:", error);
+    // });
+
+    
+    function getDesigns() { 
+      designRef.get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+              // doc.data() is never undefined for query doc snapshots
+              console.log(doc.id, " => ", doc.data());
+
+              let btn = document.createElement('BUTTON'); 
+              var t = document.createTextNode(doc.id);    
+              btn.appendChild(t);  
+              let designList = document.getElementById("designList")
+              btn.setAttribute("onClick", `setDesign('${doc.id}')`)
+              designList.appendChild(btn)
+          });
+      });
+    }
+
+    function setDesign(name) { 
+      designRef.doc(name).get().then(function(doc) {
+      if (doc.exists) {
+          console.log("New Design data:", doc.data().pixelColor);
+          updateDesign( 
+            doc.data().pictureSize,
+            doc.data().inverted,
+            doc.data().backgroundColor,
+            doc.data().pixelColor,
+            doc.data().pixelShape,
+            doc.data().pixelSize
+          )
+      } else {
+          // doc.data() will be undefined in this case
+          console.log("No such design!");
+      }
+      }).catch(function(error) {
+          console.log("Error getting document:", error);
+      });
+    }
+
+
+
+    function saveDesign() { 
+      var pictureSize=document.getElementById("myRange").value; 
+      var inverted=document.getElementById("inverted").checked; 
+      var backgroundColor=document.getElementById("backgroundColor").value; 
+      var pixelColor=document.getElementById("pixelColor").value; 
+      var pixelShape=document.getElementById("pixelType").value; 
+      var pixelSize=document.getElementById("sizeSlider").value; 
+
+      console.log(pictureSize, inverted, backgroundColor, pixelColor, pixelShape)
+      
+      let title = window.prompt("Your design title:");
+
+      designRef.doc(title).set({
+        pictureSize: pictureSize, 
+        inverted : inverted, 
+        backgroundColor : backgroundColor, 
+        pixelColor : pixelColor, 
+        pixelShape : pixelShape, 
+        pixelSize: pixelSize
+      })
+      .then(function() {
+          console.log("Design Successfully Saved!");
+      })
+      .catch(function(error) {
+          console.error("Error writing document: ", error);
+      });
+
+      // Add design to current Design List
+      let btn = document.createElement('BUTTON'); 
+      var t = document.createTextNode(title);    
+      btn.appendChild(t);  
+      let designList = document.getElementById("designList")
+      btn.setAttribute("onClick", `setDesign('${title}')`)
+      designList.appendChild(btn)
+    }
+
+
+    function updateDesign(pictureSize, inverted, backgroundColor, pixelColor, pixelShape, pixelSize) { 
+      document.getElementById("myRange").value = pictureSize; 
+      document.getElementById("inverted").checked = inverted
+      document.getElementById("backgroundColor").value = backgroundColor
+      document.getElementById("pixelColor").value = pixelColor 
+      document.getElementById("pixelType").value = pixelShape 
+      document.getElementById("sizeSlider").value=  pixelSize
+
+    }
+    
+    // Get GetDesigns to initialize first list of designs: 
+    getDesigns();
+   
+  </script>
+  </script> 
  
 </html>
