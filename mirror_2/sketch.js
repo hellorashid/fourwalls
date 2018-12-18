@@ -3,8 +3,11 @@ let vScale = 10;
 let angle = 0 
 let test = 20
 let inverted = false
-
+let backgroundColor = '#000000'
 let pixelScale = 1
+let pixelType = 'gradient'
+
+let globalColor = 'random'
 
 function setup() {
   // createCanvas(640, 480);
@@ -12,18 +15,18 @@ function setup() {
   pixelDensity(1); // for high-denstity displays
 
   video = createCapture(VIDEO); // capture webcam
-  video.size(width/vScale, height/vScale);
+  video.size(width/(vScale * 2), height/(vScale * 2) );
 
   frameRate(10);
 
   // Show or hide the live webcam feed: 
-  video.hide(); 
+  // video.hide(); 
 
   
 }
 
 function draw() {
-  background(0);
+  background(backgroundColor);
   let scaleSlider = select('#myRange') 
   vScale = scaleSlider.value()
 
@@ -32,6 +35,12 @@ function draw() {
 
   let invertedValue = select('#inverted') 
   inverted = invertedValue.checked()
+
+  let backgroundColorPicker = select('#backgroundColor') 
+  backgroundColor = backgroundColorPicker.value()
+
+  let pixelTypeValue = select('#pixelType') 
+  pixelType = pixelTypeValue.value()
 
   //Show the camera feed as image, can also apply filters: 
   // image(video, 0, 0, windowWidth/2, windowHeight/2); 
@@ -85,32 +94,78 @@ function drawPixel(xPos, yPos, pixelSize) {
   // this function whatever in each pixel 
   // use xPos & yPos for positioning pixel
   // use pixelSize to play around with shit getting bigger & smaller
-
-  // Rectangles : 
   noStroke();
   rectMode(CENTER);
-  // fill(color(random(0,255) * noise(1), random(0,255), random(0,255)));
-  fill(color(sin(angle) * 209,  73, 126));
 
+  //  ------ COLOR ------ : 
+
+  if (pixelType == 'random') { 
+    fill(color(random(0,255) , random(0,255), random(0,255)));
+  } else if (pixelType == 'gradient') { 
+    fill(color(sin(angle) * 209,  73, 126));
+  }
+
+  //  ------ SETTINGS ------ : 
   if (inverted == true) { 
     pixelSize = (vScale - pixelSize) 
   }
   pixelSize = pixelSize * pixelScale 
 
+
   // pixelSize = (sin(angle) * pixelSize/2) + 5
   angle += 0.2;
   
-  // Circles : 
-  ellipse(xPos, yPos, pixelSize, pixelSize);
+  let r = random(0, 255)
+  let g = random(0, 255)
+  let b = random(0, 255)
 
-  // Emojis
-  // textSize(pixelSize)
-  // if (pixelSize > 10) { 
-  //   text('✅', xPos, yPos)
-  // } 
-  // else { 
-  //   text('😍', xPos, yPos)    
-  // }
+  
+
+  //  ------ SHAPE ------ : 
+  
+  if (pixelType == 'emoji') { 
+    //  Emojis
+    textSize(pixelSize)
+    if (pixelSize > (vScale/2)) { 
+      fill(color(r, g, b))
+      text('❤', xPos, yPos)
+    } 
+    else { 
+      // text('✔', xPos, yPos)    
+    }
+  } else { 
+
+    // if (pixelSize > 8 && yPos < height/3) { 
+    //   globalColor = 'red'
+    // } else if (pixelSize > 8 && xPos < width/ 3) { 
+    //   globalColor = 'green'
+    // } else if (pixelSize > 8 && xPos > 2 * (width/ 3)) { 
+    //   globalColor = 'blue'
+    // } else { 
+    //   // globalColor = 'random'
+    // }
+
+    // if (globalColor == 'red') { 
+    //   r = 255
+    //   g = 0 
+    //   b = 0
+    // } else if (globalColor == 'green') { 
+    //   r = 0
+    //   g = 255
+    //   b = 0
+    // } else if (globalColor == 'blue') { 
+    //   r = 0
+    //   g = 0 
+    //   b = 255
+    // } 
+
+    // console.log(pixelSize)
+
+    
+    // fill(color(r, g, b))
+    ellipse(xPos, yPos, pixelSize, pixelSize);
+  }
+ 
 }
 
 // Direct pixel manimpulation, in draw() 
@@ -137,11 +192,8 @@ function drawPixel(xPos, yPos, pixelSize) {
       vScale -= 1 
       console.log('New Scale: ', vScale);
     } else if (keyCode === UP_ARROW) {
-      // let scaleSlider = select('#myRange') 
-      // console.log(scaleSlider.value())
-      let invertedValue = select('#inverted') 
-      inverted = invertedValue.checked()
-      console.log(inverted)
+     
+      console.log(pixelType)
 
     }
 
